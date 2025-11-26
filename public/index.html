@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泊寓 Bo Yu | 寧靜致遠的休憩之所</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 引入 Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; letter-spacing: 0.05em; }
+        .fade-in { animation: fadeIn 0.8s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-700">
+
+    <!-- 導航欄 -->
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md shadow-sm transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold tracking-widest text-gray-800">泊寓 <span class="text-xs font-normal text-gray-500">BO YU</span></a>
+            <div class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="#rooms" class="hover:text-black transition">房型一覽</a>
+                <a href="#booking" class="hover:text-black transition">預約訂房</a>
+                <a href="#community" class="hover:text-black transition">旅人誌</a>
+            </div>
+            <div id="auth-section">
+                <!-- 這裡的內容會由 JS 根據登入狀態動態渲染 -->
+                <button onclick="toggleModal('login-modal')" class="text-sm border border-gray-300 px-4 py-2 rounded hover:bg-black hover:text-white transition">登入 / 註冊</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative h-screen flex items-center justify-center bg-cover bg-center" style="background-image: url('https://cf.bstatic.com/xdata/images/hotel/max1024x768/498305739.jpg?k=f583569727407519638102607921610488056281028742880193856557879483&o=&hp=1');">
+        <div class="absolute inset-0 bg-black/30"></div>
+        <div class="relative z-10 text-center text-white p-6 fade-in">
+            <h1 class="text-5xl md:text-7xl font-light mb-4">泊寓</h1>
+            <p class="text-lg md:text-xl font-light opacity-90 mb-8">停泊於心，寓見美好</p>
+            <a href="#booking" class="bg-white text-black px-8 py-3 text-sm tracking-widest hover:bg-gray-200 transition">立即預約</a>
+        </div>
+    </header>
+
+    <!-- 房型與簡介 -->
+    <section id="rooms" class="py-20 max-w-6xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-light mb-4">靜謐空間</h2>
+            <div class="w-12 h-0.5 bg-gray-400 mx-auto"></div>
+        </div>
+        <div class="grid md:grid-cols-2 gap-10 items-center">
+            <img src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/498305745.jpg?k=28384812838481" alt="Room" class="w-full h-80 object-cover shadow-lg rounded-sm grayscale hover:grayscale-0 transition duration-700">
+            <div>
+                <h3 class="text-2xl font-light mb-4">標準雙人房</h3>
+                <p class="text-gray-500 leading-relaxed mb-6">簡約的設計語言，除去多餘的裝飾，只留下最純粹的休憩體驗。舒適的大床與窗外的自然光景，是您旅途中最好的慰藉。</p>
+                <ul class="text-sm text-gray-500 space-y-2 mb-6">
+                    <li><i class="fas fa-wifi w-6"></i> 免費 Wi-Fi</li>
+                    <li><i class="fas fa-wind w-6"></i> 獨立空調</li>
+                    <li><i class="fas fa-bath w-6"></i> 私人衛浴</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 訂房區塊 -->
+    <section id="booking" class="py-20 bg-gray-100">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="bg-white p-8 md:p-12 shadow-xl rounded-sm">
+                <h2 class="text-2xl font-light mb-6 text-center">預約您的住宿</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wide text-gray-500 mb-2">入住日期查詢</label>
+                        <!-- 日曆容器 -->
+                        <input type="text" id="calendar-input" class="w-full border p-3 rounded focus:outline-none focus:border-black" placeholder="載入中...">
+                        <p class="text-xs text-gray-400 mt-2">* 灰色日期代表已額滿</p>
+                    </div>
+                    <div class="flex flex-col justify-center border-l pl-0 md:pl-8 border-gray-200">
+                        <p class="mb-4 text-sm text-gray-600">我們與 Booking.com 系統同步，確保您能即時查詢空房狀態。</p>
+                        <a href="https://www.booking.com/hotel/tw/bo-yu-boyu.zh-tw.html" target="_blank" class="block w-full bg-[#003580] text-white text-center py-3 rounded hover:bg-[#002860] transition shadow-md">
+                            <i class="fas fa-check-circle mr-2"></i> 前往 Booking.com 訂房
+                        </a>
+                        <p class="text-xs text-center text-gray-400 mt-2">將開啟新視窗進行安全支付</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 社群討論區 (旅人誌) -->
+    <section id="community" class="py-20 max-w-5xl mx-auto px-6">
+        <div class="flex justify-between items-end mb-10">
+            <div>
+                <h2 class="text-3xl font-light mb-2">旅人誌</h2>
+                <p class="text-gray-500 text-sm">分享您在泊寓的故事</p>
+            </div>
+            <button onclick="checkLoginForPost()" class="bg-black text-white px-6 py-2 text-sm hover:opacity-80 transition">
+                <i class="fas fa-pen mr-2"></i> 撰寫心得
+            </button>
+        </div>
+
+        <!-- 文章列表容器 -->
+        <div id="posts-container" class="grid md:grid-cols-3 gap-6">
+            <!-- 內容將由 JS 從後端 API 載入 -->
+            <p class="text-gray-400 col-span-3 text-center py-10">載入文章中...</p>
+        </div>
+    </section>
+
+    <footer class="bg-gray-900 text-white py-12 text-center text-sm font-light">
+        <p class="mb-4">泊寓 BO YU</p>
+        <p class="opacity-50">&copy; 2024 Bo Yu Homestay. All Rights Reserved.</p>
+    </footer>
+
+    <!-- 登入/註冊 模態視窗 -->
+    <div id="login-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md p-8 rounded shadow-2xl relative">
+            <button onclick="toggleModal('login-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-black">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="text-2xl font-bold mb-6 text-center">歡迎回到泊寓</h3>
+            
+            <div class="space-y-4">
+                <input id="login-email" type="email" placeholder="電子信箱" class="w-full border p-3 rounded bg-gray-50 focus:bg-white transition">
+                <input id="login-password" type="password" placeholder="密碼" class="w-full border p-3 rounded bg-gray-50 focus:bg-white transition">
+                <button onclick="handleLogin()" class="w-full bg-black text-white py-3 rounded hover:opacity-90 transition">登入 / 註冊</button>
+            </div>
+            
+            <p class="text-center text-xs text-gray-400 mt-6">輸入新帳號密碼將自動嘗試註冊</p>
+        </div>
+    </div>
+
+    <!-- 發文 模態視窗 -->
+    <div id="post-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center backdrop-blur-sm">
+        <div class="bg-white w-full max-w-lg p-8 rounded shadow-2xl relative">
+            <button onclick="toggleModal('post-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-black">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="text-xl font-bold mb-4">分享心得</h3>
+            <textarea id="post-content" class="w-full border p-4 h-32 rounded bg-gray-50 focus:bg-white transition mb-4" placeholder="寫下您的住宿體驗..."></textarea>
+            <button onclick="submitPost()" class="w-full bg-black text-white py-3 rounded hover:opacity-90 transition">發布文章</button>
+        </div>
+    </div>
+
+    <script>
+        // === 全域變數與 API 設定 ===
+        const API_URL = '/api'; // 與後端 server.js 對應的路由前綴
+        let currentUser = localStorage.getItem('boyu_username') || null;
+        let authToken = localStorage.getItem('boyu_token') || null;
+
+        // === 1. 初始化 (頁面載入後執行) ===
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus(); // 檢查登入狀態
+            loadPosts();       // 載入文章
+            initCalendar();    // 載入日曆
+        });
+
+        // 通用：開關 Modal
+        function toggleModal(modalId) {
+            document.getElementById(modalId).classList.toggle('hidden');
+        }
+
+        // === 2. 身份驗證邏輯 ===
+        function checkAuthStatus() {
+            const authSection = document.getElementById('auth-section');
+            if (currentUser && authToken) {
+                // 已登入
+                authSection.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-bold">嗨, ${currentUser}</span>
+                        <button class="text-xs text-gray-500 underline" onclick="logout()">登出</button>
+                    </div>
+                `;
+            } else {
+                // 未登入
+                authSection.innerHTML = `
+                    <button onclick="toggleModal('login-modal')" class="text-sm border border-gray-300 px-4 py-2 rounded hover:bg-black hover:text-white transition">登入 / 註冊</button>
+                `;
+            }
+        }
+
+        function logout() {
+            if(confirm('確定要登出嗎？')) {
+                localStorage.removeItem('boyu_username');
+                localStorage.removeItem('boyu_token');
+                currentUser = null;
+                authToken = null;
+                location.reload();
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            if (!email || !password) {
+                alert('請輸入帳號與密碼');
+                return;
+            }
+
+            try {
+                // 1. 嘗試登入
+                const res = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    // 登入成功
+                    localStorage.setItem('boyu_token', data.token);
+                    localStorage.setItem('boyu_username', data.username);
+                    currentUser = data.username;
+                    authToken = data.token;
+                    toggleModal('login-modal');
+                    checkAuthStatus();
+                    alert('登入成功！');
+                } else {
+                    // 2. 登入失敗 (401)，詢問是否註冊
+                    if (data.error === '帳號或密碼錯誤') {
+                        // 這裡為了簡化體驗，如果找不到帳號也可能回傳這個錯誤
+                        // 我們簡單判斷：如果使用者同意，就嘗試用這組帳密註冊
+                        if (confirm('登入失敗或帳號不存在。是否使用此 Email 與密碼進行「註冊」？')) {
+                            await handleRegister(email, password);
+                        }
+                    } else {
+                        alert(data.error || '發生錯誤');
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                alert('系統連線錯誤，請檢查後端伺服器是否啟動。');
+            }
+        }
+
+        async function handleRegister(email, password) {
+            try {
+                const res = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    alert('註冊成功！請再次點擊按鈕進行登入。');
+                } else {
+                    alert('註冊失敗：' + (data.error || '未知原因'));
+                }
+            } catch (err) {
+                alert('註冊時發生錯誤');
+            }
+        }
+
+        // === 3. 文章系統 (旅人誌) ===
+        async function loadPosts() {
+            const container = document.getElementById('posts-container');
+            try {
+                const res = await fetch(`${API_URL}/posts`);
+                if (!res.ok) throw new Error('Network response was not ok');
+                const posts = await res.json();
+
+                if (posts.length === 0) {
+                    container.innerHTML = '<p class="col-span-3 text-center text-gray-400">目前尚無心得，快來搶頭香！</p>';
+                    return;
+                }
+
+                container.innerHTML = posts.map(post => {
+                    const dateStr = new Date(post.date).toISOString().split('T')[0];
+                    const initial = post.username ? post.username.charAt(0).toUpperCase() : 'U';
+                    return `
+                    <div class="bg-white p-6 shadow-sm border border-gray-100 fade-in hover:shadow-md transition">
+                        <div class="flex items-center mb-4">
+                            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-bold text-gray-600">${initial}</div>
+                            <span class="ml-2 text-xs font-bold text-gray-600">${post.username}</span>
+                            <span class="ml-auto text-xs text-gray-400">${dateStr}</span>
+                        </div>
+                        <h4 class="font-bold text-lg mb-2">心得分享</h4>
+                        <p class="text-sm text-gray-500 leading-relaxed mb-4 whitespace-pre-line">${post.content}</p>
+                        <div class="text-yellow-400 text-xs">
+                            ${'★'.repeat(post.rating || 5)}
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('載入文章失敗:', err);
+                container.innerHTML = '<p class="col-span-3 text-center text-red-400">無法載入文章，請確認後端是否運行。</p>';
+            }
+        }
+
+        function checkLoginForPost() {
+            if (!authToken) {
+                alert("請先登入會員才能發文喔！");
+                toggleModal('login-modal');
+            } else {
+                toggleModal('post-modal');
+            }
+        }
+
+        async function submitPost() {
+            const content = document.getElementById('post-content').value;
+            if(!content.trim()) {
+                alert("請輸入內容");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/posts`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}` // 攜帶 JWT Token
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                if (res.ok) {
+                    document.getElementById('post-content').value = ""; 
+                    toggleModal('post-modal');
+                    loadPosts(); // 發文後重新抓取列表
+                    alert("發文成功！");
+                } else {
+                    const data = await res.json();
+                    alert("發文失敗：" + (data.error || "請重新登入"));
+                    if(res.status === 401 || res.status === 403) {
+                        logout(); // Token 失效則登出
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                alert("發送請求失敗");
+            }
+        }
+
+        // === 4. 日曆系統 ===
+        async function initCalendar() {
+            let bookedDates = [];
+            try {
+                // 從後端取得被預訂的日期
+                const res = await fetch(`${API_URL}/bookings`);
+                if(res.ok) {
+                    bookedDates = await res.json(); 
+                }
+            } catch (err) {
+                console.warn("無法連線至訂房 API，將顯示預設日曆");
+            }
+
+            flatpickr("#calendar-input", {
+                inline: true,
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                disable: bookedDates, // 來自資料庫的日期陣列
+                locale: {
+                    firstDayOfWeek: 1 // 週一開始
+                },
+                onChange: function(selectedDates, dateStr) {
+                    alert(`您選擇了 ${dateStr}，將為您導向 Booking.com 完成預訂程序。`);
+                    window.open("https://www.booking.com/hotel/tw/bo-yu-boyu.zh-tw.html", "_blank");
+                }
+            });
+        }
+    </script>
+</body>
+</html>
